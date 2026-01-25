@@ -2,6 +2,7 @@ package main
 
 import (
 	"category/handlers"
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -12,7 +13,13 @@ func main() {
 	http.HandleFunc("GET /api/category/{id}", handlers.GetCategory)
 	http.HandleFunc("DELETE /api/category/{id}", handlers.DeleteCategory)
 	http.HandleFunc("PUT /api/category/{id}", handlers.UpdateCategory)
-	http.HandleFunc("GET /health", handlers.GetHealthCheck)
+
+	http.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "OK",
+			"message": "API Running",
+		})
+	})
 
 	fmt.Println("Server running di localhost:8080")
 
