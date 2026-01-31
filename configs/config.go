@@ -19,8 +19,6 @@ func LoadingConfig() (*Config, error) {
 	_ = viper.BindEnv("port", "PORT")
 	_ = viper.BindEnv("db_conn", "DB_CONN")
 
-	viper.SetDefault("port", "3000")
-
 	if _, err := os.Stat(".env"); err == nil {
 		viper.SetConfigFile(".env")
 		_ = viper.ReadInConfig()
