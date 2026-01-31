@@ -6,15 +6,15 @@ import (
 	"errors"
 )
 
-type ProductRepository struct {
+type ProductsRepository struct {
 	db *sql.DB
 }
 
-func NewProductRepository(db *sql.DB) *ProductRepository {
-	return &ProductRepository{db: db}
+func NewProductsRepository(db *sql.DB) *ProductsRepository {
+	return &ProductsRepository{db: db}
 }
 
-func (repo *ProductRepository) GetAll() ([]models.Product, error) {
+func (repo *ProductsRepository) GetAll() ([]models.Products, error) {
 	query := "SELECT id, name, price, stock FROM products"
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -22,10 +22,10 @@ func (repo *ProductRepository) GetAll() ([]models.Product, error) {
 	}
 
 	defer rows.Close()
-	products := make([]models.Product, 0)
+	products := make([]models.Products, 0)
 
 	for rows.Next() {
-		var p models.Product
+		var p models.Products
 		if err := rows.Scan(&p.ID, &p.Name, &p.Price, &p.Stock); err != nil {
 			return nil, err
 		}
@@ -35,16 +35,16 @@ func (repo *ProductRepository) GetAll() ([]models.Product, error) {
 	return products, nil
 }
 
-func (repo *ProductRepository) Create(product *models.Product) error {
+func (repo *ProductsRepository) Create(product *models.Products) error {
 	query := "INSERT INTO products (name, price, stock) VALUES ($1, $2, $3) RETURNING id"
 	err := repo.db.QueryRow(query, product.Name, product.Price, product.Stock).Scan(&product.ID)
 	return err
 }
 
-func (repo *ProductRepository) GetByID(id int) (*models.Product, error) {
+func (repo *ProductsRepository) GetByID(id int) (*models.Products, error) {
 	query := "SELECT id, name, price, stock FROM products WHERE id = $1"
 
-	var p models.Product
+	var p models.Products
 	err := repo.db.QueryRow(query, id).Scan(&p.ID, &p.Name, &p.Price, &p.Stock)
 
 	if err == sql.ErrNoRows {
@@ -58,7 +58,7 @@ func (repo *ProductRepository) GetByID(id int) (*models.Product, error) {
 	return &p, nil
 }
 
-func (repo *ProductRepository) Update(product *models.Product) error {
+func (repo *ProductsRepository) Update(product *models.Products) error {
 	query := "UPDATE products SET name = $1, price = $2, stock = $3 WHERE id = $4"
 	result, err := repo.db.Exec(query, product.Name, product.Price, product.Stock, product.ID)
 	if err != nil {
@@ -77,7 +77,7 @@ func (repo *ProductRepository) Update(product *models.Product) error {
 	return nil
 }
 
-func (repo *ProductRepository) Delete(id int) error {
+func (repo *ProductsRepository) Delete(id int) error {
 	query := "DELETE FROM products WHERE id = $1"
 	result, err := repo.db.Exec(query, id)
 	if err != nil {
