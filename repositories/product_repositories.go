@@ -15,14 +15,14 @@ func NewProductRepository(db *sql.DB) *ProductRepository {
 }
 
 func (repo *ProductRepository) GetAll() ([]models.Product, error) {
-	query := "select id, name, price, stock FROM products"
+	query := "SELECT id, name, price, stock FROM products"
 	rows, err := repo.db.Query(query)
 	if err != nil {
 		return nil, err
 	}
 
 	defer rows.Close()
-	var products []models.Product
+	products := make([]models.Product, 0)
 
 	for rows.Next() {
 		var p models.Product
