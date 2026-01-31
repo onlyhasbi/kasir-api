@@ -9,8 +9,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
-	"github.com/spf13/viper"
 )
 
 func main() {
@@ -19,15 +17,12 @@ func main() {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
-	config := configs.Config{
-		Port:   viper.GetString("PORT"),
-		DBConn: viper.GetString("DB_CONN"),
+	db, err := configs.InitDB(cfg.DBConn)
+	if err != nil {
+		log.Fatalf("Failed to initialize database: %v", err)
 	}
 
-	db, err := configs.InitDB(config.DBConn)
-	if err != nil {
-		fmt.Printf("Failed to initialize database")
-	}
+	defer db.Close()
 
 	productRepositories := repositories.NewProductRepository(db)
 	productService := services.NewProductService(productRepositories)
@@ -51,8 +46,6 @@ func main() {
 			"message": "API Running",
 		})
 	})
-
-	defer db.Close()
 
 	serverAddr := "0.0.0.0:" + cfg.Port
 	fmt.Printf("Server running in localhost%s\n", serverAddr)
