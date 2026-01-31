@@ -55,7 +55,7 @@ func (repo *ProductRepository) GetByID(id int) (*models.Product, error) {
 		return nil, err
 	}
 
-	return &p, err
+	return &p, nil
 }
 
 func (repo *ProductRepository) Update(product *models.Product) error {
