@@ -4,6 +4,7 @@ go 1.25.1
 
 require (
 	github.com/lib/pq v1.10.9
+	github.com/rs/cors v1.11.1
 	github.com/spf13/viper v1.21.0
 	github.com/swaggo/swag v1.16.6
 )
@@ -20,7 +21,6 @@ require (
 	github.com/go-openapi/swag/stringutils v0.25.4 // indirect
 	github.com/go-openapi/swag/typeutils v0.25.4 // indirect
 	github.com/go-openapi/swag/yamlutils v0.25.4 // indirect
-	github.com/rs/cors v1.11.1 // indirect
 	golang.org/x/mod v0.32.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
 	golang.org/x/tools v0.41.0 // indirect
