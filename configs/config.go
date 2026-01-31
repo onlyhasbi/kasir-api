@@ -16,7 +16,7 @@ func LoadingConfig() (*Config, error) {
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-	if _, err := os.Stat(".env"); err != nil {
+	if _, err := os.Stat(".env"); err == nil {
 		viper.SetConfigFile(".env")
 		_ = viper.ReadInConfig()
 	}
@@ -24,6 +24,14 @@ func LoadingConfig() (*Config, error) {
 	var config Config
 	if err := viper.Unmarshal(&config); err != nil {
 		return nil, err
+	}
+
+	if config.Port == "" {
+		config.Port = os.Getenv("PORT")
+	}
+
+	if config.DBConn == "" {
+		config.DBConn = os.Getenv("DB_CONN")
 	}
 
 	return &config, nil
