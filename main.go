@@ -24,15 +24,19 @@ func main() {
 
 	defer db.Close()
 
+	categoryRepositories := repositories.NewCategoryRepository(db)
+	categoryService := services.NewCategoryService(categoryRepositories)
+	categoryHandler := handlers.NewCategoryHandler(categoryService)
+
+	http.HandleFunc("GET /api/category", categoryHandler.GetAll)
+	http.HandleFunc("POST /api/category", categoryHandler.PostCategory)
+	http.HandleFunc("GET /api/category/{id}", categoryHandler.GetCategory)
+	http.HandleFunc("DELETE /api/category/{id}", categoryHandler.DeleteCategory)
+	http.HandleFunc("PUT /api/category/{id}", categoryHandler.UpdateCategory)
+
 	productRepositories := repositories.NewProductRepository(db)
 	productService := services.NewProductService(productRepositories)
 	productHandler := handlers.NewProductHandler(productService)
-
-	http.HandleFunc("GET /api/category", handlers.GetCategories)
-	http.HandleFunc("POST /api/category", handlers.PostCategory)
-	http.HandleFunc("GET /api/category/{id}", handlers.GetCategory)
-	http.HandleFunc("DELETE /api/category/{id}", handlers.DeleteCategory)
-	http.HandleFunc("PUT /api/category/{id}", handlers.UpdateCategory)
 
 	http.HandleFunc("GET /api/product", productHandler.GetAll)
 	http.HandleFunc("POST /api/product", productHandler.PostProduct)

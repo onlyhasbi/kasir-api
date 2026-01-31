@@ -2,18 +2,32 @@ package handlers
 
 import (
 	"cashier/models"
+	"cashier/services"
 	"encoding/json"
 	"net/http"
 	"strconv"
 )
 
-func GetCategories(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(models.Categories)
-	return
+type CategoryHandler struct {
+	service *services.CategoryService
 }
 
-func GetCategory(w http.ResponseWriter, r *http.Request) {
+func NewCategoryHandler(service *services.CategoryService) *CategoryHandler {
+	return &CategoryHandler{service: service}
+}
+
+func (h *CategoryHandler) GetAll(w http.ResponseWriter, r *http.Request) {
+	categorys, err := h.service.GetAll()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(categorys)
+}
+
+func (h *CategoryHandler) GetCategory(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 
@@ -22,34 +36,36 @@ func GetCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, c := range models.Categories {
-		if c.ID == id {
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(c)
-			return
-		}
+	category, err := h.service.GetByID(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
 	}
 
-	http.Error(w, "Category tidak ditemukan.", http.StatusNotFound)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(category)
 }
 
-func PostCategory(w http.ResponseWriter, r *http.Request) {
-	var newCategory models.Category
-	err := json.NewDecoder(r.Body).Decode(&newCategory)
+func (h *CategoryHandler) PostCategory(w http.ResponseWriter, r *http.Request) {
+	var category models.Category
+	err := json.NewDecoder(r.Body).Decode(&category)
 	if err != nil {
 		http.Error(w, "Periksa kembali data yang dikirim", http.StatusBadRequest)
 		return
 	}
 
-	newCategory.ID = len(models.Categories) + 1
-	models.Categories = append(models.Categories, newCategory)
+	err = h.service.Create(&category)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(newCategory)
+	json.NewEncoder(w).Encode(category)
 }
 
-func DeleteCategory(w http.ResponseWriter, r *http.Request) {
+func (h *CategoryHandler) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 
@@ -58,21 +74,19 @@ func DeleteCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for i, c := range models.Categories {
-		if c.ID == id {
-			models.Categories = append(models.Categories[:i], models.Categories[i+1:]...)
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(map[string]string{
-				"message": "Kategori berhasil dihapus",
-			})
-			return
-		}
+	err = h.service.Delete(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
 	}
 
-	http.Error(w, "Kategori tidak ditemukan", http.StatusNotFound)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "Category deleted successfully",
+	})
 }
 
-func UpdateCategory(w http.ResponseWriter, r *http.Request) {
+func (h *CategoryHandler) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 
@@ -81,26 +95,20 @@ func UpdateCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var updateCategory models.Category
-	err = json.NewDecoder(r.Body).Decode(&updateCategory)
-
+	var category models.Category
+	err = json.NewDecoder(r.Body).Decode(&category)
 	if err != nil {
 		http.Error(w, "Periksa kembali data yang dikirim", http.StatusBadRequest)
 		return
 	}
 
-	for i, c := range models.Categories {
-		if c.ID == id {
-			updateCategory.ID = id
-			models.Categories[i] = updateCategory
-
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(map[string]string{
-				"message": "Kategori berhasil diperbarui",
-			})
-			return
-		}
+	category.ID = id
+	err = h.service.Update(&category)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
-	http.Error(w, "Kategori tidak ditemukan", http.StatusNotFound)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(category)
 }
