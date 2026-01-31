@@ -1,6 +1,7 @@
 package configs
 
 import (
+	"os"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -15,8 +16,10 @@ func LoadingConfig() (*Config, error) {
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-	viper.SetConfigFile(".env")
-	_ = viper.ReadInConfig()
+	if _, err := os.Stat(".env"); err != nil {
+		viper.SetConfigFile(".env")
+		_ = viper.ReadInConfig()
+	}
 
 	var config Config
 	if err := viper.Unmarshal(&config); err != nil {
