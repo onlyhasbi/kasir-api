@@ -1,9 +1,6 @@
 package configs
 
 import (
-	"os"
-	"strings"
-
 	"github.com/spf13/viper"
 )
 
@@ -13,25 +10,16 @@ type Config struct {
 }
 
 func LoadingConfig() (*Config, error) {
-	viper.AutomaticEnv()
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-
-	if _, err := os.Stat(".env"); err == nil {
-		viper.SetConfigFile(".env")
-		_ = viper.ReadInConfig()
-	}
-
 	var config Config
+
+	_ = viper.BindEnv("DBConn", "DB_CONN")
+	_ = viper.BindEnv("Port", "PORT")
+
+	viper.SetConfigFile(".env")
+	_ = viper.ReadInConfig()
+
 	if err := viper.Unmarshal(&config); err != nil {
 		return nil, err
-	}
-
-	if config.Port == "" {
-		config.Port = os.Getenv("PORT")
-	}
-
-	if config.DBConn == "" {
-		config.DBConn = os.Getenv("DB_CONN")
 	}
 
 	return &config, nil
