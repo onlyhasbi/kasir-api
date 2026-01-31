@@ -47,7 +47,7 @@ func (repo *ProductRepository) GetByID(id int) (*models.Product, error) {
 	var p models.Product
 	err := repo.db.QueryRow(query, id).Scan(&p.ID, &p.Name, &p.Price, &p.Stock)
 
-	if err != sql.ErrNoRows {
+	if err == sql.ErrNoRows {
 		return nil, errors.New("Product not found")
 	}
 
