@@ -1,0 +1,343 @@
+basePath: /
+definitions:
+  models.Categories:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.Products:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      price:
+        type: integer
+      stock:
+        type: integer
+    type: object
+  utils.DataResponse:
+    properties:
+      data: {}
+    type: object
+  utils.MessageResponse:
+    properties:
+      message: {}
+    type: object
+host: kasir-api-production-7789.up.railway.app
+info:
+  contact: {}
+  title: Cashier API
+  version: "1.0"
+paths:
+  /api/category:
+    get:
+      consumes:
+      - application/json
+      description: Mengambil semua data kategori dari database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.DataResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Categories'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.MessageResponse'
+      summary: Ambil semua kategori
+      tags:
+      - categories
+    post:
+      consumes:
+      - application/json
+      description: Menambahkan data kategori baru ke database
+      parameters:
+      - description: Data Kategori
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/models.Categories'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.DataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Categories'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.MessageResponse'
+      summary: Buat kategori baru
+      tags:
+      - categories
+  /api/category/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Menghapus data kategori berdasarkan ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.MessageResponse'
+      summary: Hapus kategori
+      tags:
+      - categories
+    get:
+      consumes:
+      - application/json
+      description: Mengambil data kategori spesifik berdasarkan ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.DataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Categories'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.MessageResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.MessageResponse'
+      summary: Ambil kategori berdasarkan ID
+      tags:
+      - categories
+    put:
+      consumes:
+      - application/json
+      description: Memperbarui data kategori berdasarkan ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Data Kategori
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/models.Categories'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.DataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Categories'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.MessageResponse'
+      summary: Update kategori
+      tags:
+      - categories
+  /api/product:
+    get:
+      consumes:
+      - application/json
+      description: Mengambil semua data produk dari database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.DataResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Products'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.MessageResponse'
+      summary: Ambil semua produk
+      tags:
+      - products
+    post:
+      consumes:
+      - application/json
+      description: Menambahkan data produk baru ke database
+      parameters:
+      - description: Data Produk
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.Products'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.DataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Products'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.MessageResponse'
+      summary: Buat produk baru
+      tags:
+      - products
+  /api/product/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Menghapus data produk berdasarkan ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.MessageResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.MessageResponse'
+      summary: Hapus produk
+      tags:
+      - products
+    get:
+      consumes:
+      - application/json
+      description: Mengambil data produk spesifik berdasarkan ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.DataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Products'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.MessageResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.MessageResponse'
+      summary: Ambil produk berdasarkan ID
+      tags:
+      - products
+    put:
+      consumes:
+      - application/json
+      description: Memperbarui data produk berdasarkan ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Data Produk
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.Products'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.DataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Products'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.MessageResponse'
+      summary: Update produk
+      tags:
+      - products
+swagger: "2.0"
