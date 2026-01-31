@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"category/models"
+	"cashier/models"
 	"encoding/json"
 	"net/http"
 	"strconv"
